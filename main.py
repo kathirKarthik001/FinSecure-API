@@ -107,15 +107,15 @@ def score_transaction(transaction: dict):
     prob = float(model.predict_proba(df)[0][1])
 
     if prob >= 0.40:
-        risk = "🚨 Critical Fraud Risk"
+        risk = "Critical Fraud Risk"
     elif prob >= 0.20:
-        risk = "⚠️ High Fraud Risk"
+        risk = "High Fraud Risk"
     elif prob >= 0.06:
         risk = "Suspicious Activity"
     elif prob >= 0.03:
         risk = "Medium Risk Anomaly"
     else:
-        risk = "Low Risk / Normal Activity"
+        risk = "Normal Activity"
 
     return {
         "probability": clean(prob),
@@ -132,12 +132,12 @@ def home():
 # SINGLE ITEM ENDPOINT
 @app.post("/predict")
 def predict(transaction: Transaction):
-    return score_transaction(transaction.dict())
+    return score_transaction(transaction.model_dump())
 
 # MULTIPLE ITEMS ENDPOINT
 @app.post("/predict/batch")
 def predict_batch(transactions: list[Transaction]):
     results = []
     for tx in transactions:
-        results.append(score_transaction(tx.dict()))
+        results.append(score_transaction(tx.model_dump()))
     return {"results": results}
